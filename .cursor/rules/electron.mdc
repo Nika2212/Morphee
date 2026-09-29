@@ -1,0 +1,29 @@
+---
+description: Morphée is an Electron Windows sleep utility — always assume this stack
+alwaysApply: true
+---
+
+# Stack
+
+Morphée is an **Electron** Windows 11 desktop utility (no Angular, no renderer UI).
+
+- **Primary behavior**: on launch, force the PC to sleep (no UI, no prompts, no terminal)
+- **Main process**: `electron/main.js` (sleep via Win32 `SetSuspendState`)
+- **Distribution**: portable `.exe` (not an installer) via `electron-builder`
+- **Do not** treat this as Angular, React, Next.js, or a web SPA
+
+# Layout
+
+- Electron entry: `electron/main.js`
+- Portable build output: `release/Morphee.exe`
+
+# Commands
+
+- `npm start` — run Electron (triggers sleep)
+- `npm run pack` — build portable `release/Morphee.exe`
+
+# Conventions
+
+- No BrowserWindow — stay silent and quit after invoking sleep
+- Keep spawn calls `windowsHide: true` so nothing flashes a console
+- Put OS/power logic only in the Electron main process

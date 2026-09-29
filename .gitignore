@@ -1,0 +1,19 @@
+# Dependencies
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# Build output
+/dist
+/release
+/tmp
+
+# IDEs
+.idea/
+.vscode/
+.history/
+*.sublime-workspace
+
+# System
+.DS_Store
+Thumbs.db
