@@ -1,29 +1,32 @@
 ---
-description: Morphée is an Electron Windows sleep utility — always assume this stack
+description: Morphée is a native C# Windows sleep utility — always assume this stack
 alwaysApply: true
 ---
 
 # Stack
 
-Morphée is an **Electron** Windows 11 desktop utility (no Angular, no renderer UI).
+Morphée is a tiny native **C#** Windows 11 utility (no Electron, no Node, no UI).
 
-- **Primary behavior**: on launch, force the PC to sleep (no UI, no prompts, no terminal)
-- **Main process**: `electron/main.js` (sleep via Win32 `SetSuspendState`)
-- **Distribution**: portable `.exe` (not an installer) via `electron-builder`
-- **Do not** treat this as Angular, React, Next.js, or a web SPA
+- **Primary behavior**: on launch, put the PC to sleep (no UI, no prompts, no console window)
+- **Source**: `src/Morphee.cs`, compiled as `/target:winexe` so no console ever appears
+- **Sleep method**: Modern Standby (S0ix) → turn display off (`SC_MONITORPOWER`), same as Start → Sleep; S3 machines → `SetSuspendState(false, false, false)`. Never fall back to hibernate — it only wakes via the power button
+- **Distribution**: single portable `.exe`
+- **Do not** treat this as Electron, Angular, React, Next.js, or a web SPA
 
 # Layout
 
-- Electron entry: `electron/main.js`
-- Portable build output: `release/Morphee.exe`
+- Source: `src/Morphee.cs`
+- Build script: `build.cmd` (uses `%SystemRoot%\Microsoft.NET\Framework64\v4.0.30319\csc.exe`, C# 5)
+- Build output: `release/Morphee.exe`
+- App icon: `build/icon.ico` (also `build/icon.png`)
 
 # Commands
 
-- `npm start` — run Electron (triggers sleep)
-- `npm run pack` — build portable `release/Morphee.exe`
+- `build.cmd` — build `release/Morphee.exe`
+- `release\Morphee.exe --dry-run` — detect sleep mode only (exit code 1 Modern Standby, 2 S3, 3 none)
 
 # Conventions
 
-- No BrowserWindow — stay silent and quit after invoking sleep
-- Keep spawn calls `windowsHide: true` so nothing flashes a console
-- Put OS/power logic only in the Electron main process
+- No windows, no console, no child processes — call Win32 directly via P/Invoke
+- Stay within C# 5 (the compiler bundled with Windows)
+- Errors are logged to `%TEMP%\morphee-error.txt`
